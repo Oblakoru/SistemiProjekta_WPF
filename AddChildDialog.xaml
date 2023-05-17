@@ -17,6 +17,9 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -51,18 +54,46 @@
             Grid.Row="2"
             Grid.Column="1" />
 
+        <Label
+            Grid.Row="3"
+            Grid.Column="0"
+            Content="Min:" />
+        <TextBox
+            x:Name="MinTextBox"
+            Grid.Row="3"
+            Grid.Column="1" />
+
+        <Label
+            Grid.Row="4"
+            Grid.Column="0"
+            Content="Max:" />
+        <TextBox
+            x:Name="MaxTextBox"
+            Grid.Row="4"
+            Grid.Column="1" />
+
+        <Label
+            Grid.Row="5"
+            Grid.Column="0"
+            Content="Vrsta:" />
+        <ComboBox
+            x:Name="Izbira_Combobox"
+            Grid.Row="5"
+            Grid.Column="1"
+            SelectedIndex="0" />
+
         <Button
             x:Name="OkButton"
-            Grid.Row="3"
+            Grid.Row="6"
             Grid.Column="1"
             Margin="0,20,0,0"
             Click="OkButton_Click"
             Content="OK" />
         <Button
             x:Name="CancelButton"
-            Grid.Row="3"
+            Grid.Row="7"
             Grid.Column="1"
-            Margin="80,20,0,0"
+            Margin="0,20,0,0"
             Click="CancelButton_Click"
             Content="Cancel" />
     </Grid>

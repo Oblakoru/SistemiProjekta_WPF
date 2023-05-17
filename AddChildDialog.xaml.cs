@@ -22,6 +22,10 @@ namespace SistemiProjekta_WPF
         public AddChildDialog()
         {
             InitializeComponent();
+            Izbira_Combobox.Items.Add(MyEnum.Linearna);
+            Izbira_Combobox.Items.Add(MyEnum.Logaritemska);
+            Izbira_Combobox.Items.Add(MyEnum.Tabelarična);
+            Izbira_Combobox.Items.Add(MyEnum.Eksponentna);
         }
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
