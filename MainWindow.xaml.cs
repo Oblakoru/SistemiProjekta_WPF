@@ -33,8 +33,8 @@ namespace SistemiProjekta_WPF
         {
             InitializeComponent();
 
-            rootNode.Otroci.Add(new Node("Cena", 0, 0.5f, 0, 1000, MyEnum.Linearna));
-            rootNode.Otroci.Add(new Node("Izgled", 0, 0.5f, 0, 10, MyEnum.Linearna));
+            rootNode.Otroci.Add(new Node("Cena", 0, 0.5f, 0, 100, MyEnum.Linearna));
+            rootNode.Otroci.Add(new Node("Izgled", 0, 0.5f, 0, 100, MyEnum.Linearna));
             //rootNode.Otroci[1].Otroci.Add(new Node("Grandchild0", 0, 0.5f, 0, 10, MyEnum.Linearna));
             //rootNode.Otroci[1].Otroci.Add(new Node("Grandchild1", 0, 0.5f, 0, 10, MyEnum.Linearna));
 
@@ -119,19 +119,16 @@ namespace SistemiProjekta_WPF
         private void Prikazi_List(object sender, RoutedEventArgs e)
         {
             rootNode.GetAllChildNodes();
-            // I want to copy here
             rootNode.Listi = new ObservableCollection<Node>(Listi);
-            // I want to clear this
             Listi.Clear();
 
             string besedilo = "";
             foreach (Node x in rootNode.Listi)
             {
-                besedilo = besedilo + x.Ime;
+                besedilo = besedilo + " " +  x.Ime;
 
             }
             vrednost.Text = besedilo;
-
         }
 
         private void PrikazPolj(object sender, RoutedEventArgs e)
@@ -244,7 +241,7 @@ namespace SistemiProjekta_WPF
 
         public void NarediKopijo(Node node)
         {
-            Node originalNode = node; // replace with your code to get the original node
+            Node originalNode = node; 
 
             Node copiedNode = new Node
             {
@@ -344,9 +341,9 @@ namespace SistemiProjekta_WPF
             {
                 if (Vrsta == MyEnum.Linearna)
                 {
-                    float m = (float)(1.0 / (Max - Min)); // slope of the linear function
-                    float b = -m * Min; // y-intercept of the linear function
-                    float y = m * Vrednost + b; // calculate the output value using the linear function
+                    float m = (float)(1.0 / (Max - Min)); 
+                    float b = -m * Min; 
+                    float y = m * Vrednost + b; 
                     return y * Utez;
                 }
                 else if (Vrsta == MyEnum.Logaritemska)
@@ -377,29 +374,6 @@ namespace SistemiProjekta_WPF
                 return Vrednost * Utez;
             }
         }
-
-        //public List<Node> GetAllChildNodes()
-        //{
-        //    List<Node> childNodes = new List<Node>();
-
-        //    if (Otroci.Count == 0)
-        //    {
-        //        childNodes.Add(this);
-        //    }
-        //    else
-        //    {
-        //        foreach (Node n in Otroci)
-        //        {
-        //            childNodes.Add(n.GetAllChildNodes());
-        //            if (n.Otroci.Count > 0)
-        //            {
-        //                childNodes.AddRange();
-        //            }
-        //        }
-        //    }
-
-        //    return childNodes;
-        //}
 
         public void GetAllChildNodes()
         {
