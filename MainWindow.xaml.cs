@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,11 +23,17 @@ namespace SistemiProjekta_WPF
     /// </summary>
     public partial class MainWindow : Window
     {
+        //Začetni rook na katerega gradimo hierarhijo, vrednost tega bo končen izračun alternative.
         public static Node rootNode = new Node("Ocenjevanje", 0, 1, 0, 0);
-        public static ObservableCollection<Node> Listi = new ObservableCollection<Node>();
-        public static ObservableCollection<Node> kopije = new ObservableCollection<Node>();
-        public static int steviloAlternativ = 0;
 
+        //Začasni ObservableCollection, ki vsebuje Liste drevesa. Njegove podatke nato prenesemo na List property objekta.
+        public static ObservableCollection<Node> Listi = new ObservableCollection<Node>();
+
+        //Kopije drevesa z namenom izračun alternativ. 1 kopija == 1 alternativa
+       // public static ObservableCollection<Node> kopije = new ObservableCollection<Node>();
+        //public static int steviloAlternativ = 0;
+
+        //Imena ter končne ocene posameznih alternativ
         public static ObservableCollection<Alternativa> IzracunaneAlternative = new ObservableCollection<Alternativa>();
 
 
@@ -33,8 +41,8 @@ namespace SistemiProjekta_WPF
         {
             InitializeComponent();
 
-            rootNode.Otroci.Add(new Node("Cena", 0, 0.5f, 0, 100, MyEnum.Linearna));
-            rootNode.Otroci.Add(new Node("Izgled", 0, 0.5f, 0, 100, MyEnum.Linearna));
+            //rootNode.Otroci.Add(new Node("Cena", 0, 0.5f, 0, 100, MyEnum.Linearna));
+            //rootNode.Otroci.Add(new Node("Izgled", 0, 0.5f, 0, 100, MyEnum.Linearna));
             //rootNode.Otroci[1].Otroci.Add(new Node("Grandchild0", 0, 0.5f, 0, 10, MyEnum.Linearna));
             //rootNode.Otroci[1].Otroci.Add(new Node("Grandchild1", 0, 0.5f, 0, 10, MyEnum.Linearna));
 
@@ -42,27 +50,8 @@ namespace SistemiProjekta_WPF
 
         }
 
-
-
-        //private void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        //{
-        //    Node selectedNode = e.NewValue as Node;
-
-        //    if (selectedNode != null)
-        //    {
-        //        AddChildDialog dialog = new AddChildDialog();
-        //        if (dialog.ShowDialog() == true)
-        //        {
-        //            float value = float.Parse(dialog.ValueTextBox.Text);
-        //            float weight = float.Parse(dialog.WeightTextBox.Text);
-        //            string name = dialog.NameTextBox.Text;
-
-        //            selectedNode.Otroci.Add(new Node(name, value, weight));
-        //        }
-        //    }
-        //}
-        // 
-
+        //Dodajanja otroka v hierarhijo preko novega okna.
+       
         private void AddChildButton_Click(object sender, RoutedEventArgs e)
         {
             Node selectedNode = Drevo.SelectedItem as Node;
@@ -84,18 +73,24 @@ namespace SistemiProjekta_WPF
             {
                 if (selectedNode != null)
                 {
+                    //Odpiranje novega okna, ki izpiše vse podatke iz textboxov
                     AddChildDialog dialog = new AddChildDialog();
+
+                    //Preverjanje, če je dialog bil pravilno potrjen - OK gumb
                     if (dialog.ShowDialog() == true)
                     {
-                        float value = float.Parse(dialog.ValueTextBox.Text);
-                        float weight = float.Parse(dialog.WeightTextBox.Text);
+                        //float value = float.Parse(dialog.ValueTextBox.Text);
+                        //float weight = float.Parse(dialog.WeightTextBox.Text);
+                        float weight = float.Parse(dialog.valueText.Text);
                         string name = dialog.NameTextBox.Text;
                         int min = int.Parse(dialog.MinTextBox.Text);
                         int max = int.Parse(dialog.MaxTextBox.Text);
 
                         MyEnum vrsta = (MyEnum)dialog.Izbira_Combobox.SelectedItem;
 
-                        selectedNode.Otroci.Add(new Node(name, value, weight, min, max, vrsta));
+                        //Izbranemu nodu dodamo otroka
+                        //selectedNode.Otroci.Add(new Node(name, value, weight, min, max, vrsta));
+                        selectedNode.Otroci.Add(new Node(name, 0, weight, min, max, vrsta));
                     }
                 }
             }
@@ -106,121 +101,65 @@ namespace SistemiProjekta_WPF
 
         }
 
+        //Trenutno se to nebo uporabljalo
         private void Izracunaj_Button_Click(object sender, RoutedEventArgs e)
         {
             vrednost.Text = rootNode.VrniVrednost().ToString();
         }
+
+        //Vsakemu nodu naredimo novi ObservableCollection, v katerem se nahajajo reference to njegovih listov z namenom spreminjanja vrednosti
         private void DodeliListe(Node node)
         {
             node.GetAllChildNodes();
             node.Listi = new ObservableCollection<Node>(Listi);
             Listi.Clear();
         }
+
+
         private void Prikazi_List(object sender, RoutedEventArgs e)
         {
             rootNode.GetAllChildNodes();
             rootNode.Listi = new ObservableCollection<Node>(Listi);
             Listi.Clear();
 
-            string besedilo = "";
-            foreach (Node x in rootNode.Listi)
-            {
-                besedilo = besedilo + " " +  x.Ime;
+            tab_altermatove.IsEnabled = true;
+            tab_root.SelectedIndex = 1;
+            tab_hierarhija.IsEnabled = false;
 
-            }
-            vrednost.Text = besedilo;
         }
 
+        //Tukaj se dodajajo alternative
         private void PrikazPolj(object sender, RoutedEventArgs e)
         {
-            steviloAlternativ++;
-
-            StackPanel stackPanel = new StackPanel();
-            //stackPanel.Orientation = Orientation.Horizontal;
-            stackPanel.HorizontalAlignment = HorizontalAlignment.Center;
-
-
-
-            foreach (Node node in rootNode.Listi)
+            var zacasna = NarediKopijo(rootNode);
+            DodeliListe(zacasna);
+            //Odpiranje novega okna, ki izpiše vse podatke iz textboxov
+            DodajParameter dialog = new DodajParameter(zacasna);
+            //Preverjanje, če je dialog bil pravilno potrjen - OK gumb
+            if (dialog.ShowDialog() == true)
             {
-                // create a label with the "Ime" attribute of the node
-                Label label = new Label();
-                label.Content = node.Ime;
-                label.Width = 100;
+                IzracunaneAlternative.Add(dialog.alternativa);
 
-                // create a textbox for the "Vrednost" attribute of the node
-                TextBox textBox = new TextBox();
-                textBox.Text = node.Vrednost.ToString();
-                textBox.Width = 400;
-
-                //StackPanel stackPanel = new StackPanel();
-                //stackPanel.Orientation = Orientation.Horizontal;
-                //stackPanel.HorizontalAlignment = HorizontalAlignment.Center;
-
-                stackPanel.Children.Add(label);
-                stackPanel.Children.Add(textBox);
-
-                //alternative.Children.Add(stackPanel);
-            }
-            alternative.Children.Add(stackPanel);
-        }
-
-        ///Dodat treba za stackpanel parenta
-        private void IzracunajVrednost(object sender, RoutedEventArgs e)
-        {
-            //Added
-            for (int z = 0; z < alternative.Children.Count; z++)
-            {
-                NarediKopijo(rootNode);
-            }
-
-            // gre skozi vsak stackpanel - ena alternativa
-            for (int x = 0; x < alternative.Children.Count; x++)
-            {
-                if (alternative.Children[x] is StackPanel)
+                vrednost_Izracunane.Text = "Trenutno ovrednotene alternative: ";
+                foreach (var alternative in IzracunaneAlternative)
                 {
-                    StackPanel stackPanel = alternative.Children[x] as StackPanel;
-
-                    int steviloListov = 0;
-                    //novo
-                    DodeliListe(kopije[x]);
-                    //Gre skozi vsak objekt v stackpanelu - če je ta Textbox - se vrednost prenese na node!
-                    for (int y = 0; y < stackPanel.Children.Count; y++)
-                    {
-                        if (stackPanel.Children[y] is TextBox)
-                        {   
-                           
-                            TextBox textBox = stackPanel.Children[y] as TextBox;
-                            /// TUle bo treba fixat da bo y sam med 1-2
-                            /// //Problem je ker se posodi sam Listi, ne pa Otroci!!!
-                            kopije[x].Listi[steviloListov].Vrednost = float.Parse(textBox.Text);
-                            //Dodano
-                            steviloListov++;
-
-                            //Alternativa nova = new Alternativa();
-                            //nova.Vrednost = rootNode.VrniVrednost();
-                            //nova.Ime = x.ToString();
-                            //IzracunaneAlternative.Add(nova);
-                            //vrednost_Izracunane.Text = nova.Ime + " " + nova.Vrednost.ToString();
-                           
-                        }
-                    }
-
-                    Alternativa nova = new Alternativa();
-                    nova.Vrednost = kopije[x].VrniVrednost();
-                    nova.Ime = x.ToString();
-                    IzracunaneAlternative.Add(nova);
-                    //vrednost_Izracunane.Text = nova.Ime + " " + nova.Vrednost.ToString();
+                    vrednost_Izracunane.Text += "\n" + alternative.Ime;
                 }
             }
+        }
 
-            //vrednost_Izracunane.Text = rootNode.VrniVrednost().ToString();
-
+        private void IzracunajVrednost(object sender, RoutedEventArgs e)
+        {
+            vrednost_Izracunane.Text = "Ocene trenutnih alternativ: ";
             foreach (var alternative in IzracunaneAlternative)
             {
                 vrednost_Izracunane.Text += "\n" + alternative.Ime + " Vrednost je: " + alternative.Vrednost;
             }
+
+            var zacasno = IzracunaneAlternative.OrderByDescending(obj => obj.Vrednost).FirstOrDefault();
+            vrednost_Izracunane.Text += "\n Zmagovalna alternativa je: " + zacasno.Ime + " z vrednostjo: " + zacasno.Vrednost.ToString();
         }
+
 
         Node DeepCopy(Node original)
         {
@@ -238,8 +177,8 @@ namespace SistemiProjekta_WPF
             return copiedNode;
         }
 
-
-        public void NarediKopijo(Node node)
+        // Funkcija za kloniranje hierarhije za vsak parameter posebej. Reference se ustvarijo ponovno za vsak parameter.
+        public Node NarediKopijo(Node node)
         {
             Node originalNode = node; 
 
@@ -254,59 +193,162 @@ namespace SistemiProjekta_WPF
                 Listi = new ObservableCollection<Node>(originalNode.Listi.Select(n => DeepCopy(n))),
                 Otroci = new ObservableCollection<Node>(originalNode.Otroci.Select(n => DeepCopy(n)))
             };
-            kopije.Add(copiedNode);
+            //kopije.Add(copiedNode);
+
+            //Dodana funkcionalnost za windows
+            return copiedNode;
         }
 
+        private void UrediChildButton_Click(object sender, RoutedEventArgs e)
+        {
+            Node selectedNode = Drevo.SelectedItem as Node;
 
+            try
+            {
+                if (selectedNode == null)
+                {
+                    var x = Drevo.SelectedItem as TreeViewItem;
+                    selectedNode = x.DataContext as Node;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ojoj!");
+            }
 
-        /// TO DO !
-        //private void Izbrisi(object sender, RoutedEventArgs e)
-        //{
-        //    Node selectedNode = Drevo.SelectedItem as Node;
+            try
+            {
+                if (selectedNode != null)
+                {
 
-        //    try
-        //    {
-        //        if (selectedNode == null)
-        //        {
-        //            var x = Drevo.SelectedItem as TreeViewItem;
-        //            selectedNode = x.DataContext as Node;
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show("Ojoj!");
-        //    }
+                    AddChildDialog dialog = new AddChildDialog();
+                    dialog.valueText.Text = selectedNode.Utez.ToString();
+                    dialog.NameTextBox.Text = selectedNode.Ime;
+                    dialog.MinTextBox.Text = selectedNode.Min.ToString();
+                    dialog.MaxTextBox.Text = selectedNode.Max.ToString();
 
+                    //Preverjanje, če je dialog bil pravilno potrjen - OK gumb
+                    if (dialog.ShowDialog() == true)
+                    {
+                        float weight = float.Parse(dialog.valueText.Text);
+                        string name = dialog.NameTextBox.Text;
+                        int min = int.Parse(dialog.MinTextBox.Text);
+                        int max = int.Parse(dialog.MaxTextBox.Text);
+                        MyEnum vrsta = (MyEnum)dialog.Izbira_Combobox.SelectedItem;
 
-        //    if (selectedNode != null)
-        //    {
-        //        AddChildDialog dialog = new AddChildDialog();
-        //        if (dialog.ShowDialog() == true)
-        //        {
-        //            float value = float.Parse(dialog.ValueTextBox.Text);
-        //            float weight = float.Parse(dialog.WeightTextBox.Text);
-        //            string name = dialog.NameTextBox.Text;
-        //            int min = int.Parse(dialog.MinTextBox.Text);
-        //            int max = int.Parse(dialog.MaxTextBox.Text);
-
-        //            MyEnum vrsta = (MyEnum)dialog.Izbira_Combobox.SelectedItem;
-
-        //            selectedNode.Otroci.Add(new Node(name, value, weight, min, max, vrsta));
-        //        }
-        //    }
-        //}
+                        //Izbranemu nodu dodamo otroka
+                        //selectedNode.Otroci.Add(new Node(name, value, weight, min, max, vrsta));
+                        selectedNode.Utez = weight;
+                        selectedNode.Min = min; 
+                        selectedNode.Max = max;
+                        selectedNode.Ime = name;
+                        selectedNode.Vrsta = vrsta;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ojoj!");
+            }
+        }
     }
 
-    public class Node
+    public class Node : INotifyPropertyChanged
     {
-        public float Vrednost { get; set; }
-        public float Utez { get; set; }
-        public string Ime { get; set; }
-        public int Min { get; set; }
+        public event PropertyChangedEventHandler PropertyChanged;
 
-        public int Max { get; set; }
+        // public float Vrednost { get; set; }
+        // public float Utez { get; set; }
+        // public string Ime { get; set; }
+        // public int Min { get; set; }
+        //
+        // public int Max { get; set; }
 
-        public MyEnum Vrsta = MyEnum.Tabelarična;
+        private float vrednost;
+        public float Vrednost
+        {
+            get { return vrednost; }
+            set
+            {
+                if (vrednost != value)
+                {
+                    vrednost = value;
+                    OnPropertyChanged(nameof(Vrednost));
+                }
+            }
+        }
+
+        private float utez;
+        public float Utez
+        {
+            get { return utez; }
+            set
+            {
+                if (utez != value)
+                {
+                    utez = value;
+                    OnPropertyChanged(nameof(Utez));
+                }
+            }
+        }
+
+        private string ime;
+        public string Ime
+        {
+            get { return ime; }
+            set
+            {
+                if (ime != value)
+                {
+                    ime = value;
+                    OnPropertyChanged(nameof(Ime));
+                }
+            }
+        }
+
+        private int min;
+        public int Min
+        {
+            get { return min; }
+            set
+            {
+                if (min != value)
+                {
+                    min = value;
+                    OnPropertyChanged(nameof(Min));
+                }
+            }
+        }
+
+        private int max;
+        public int Max
+        {
+            get { return max; }
+            set
+            {
+                if (max != value)
+                {
+                    max = value;
+                    OnPropertyChanged(nameof(Max));
+                }
+            }
+        }
+
+        private MyEnum vrsta;
+        public MyEnum Vrsta
+        {
+            get { return vrsta; }
+            set
+            {
+                if (vrsta != value)
+                {
+                    vrsta = value;
+                    OnPropertyChanged(nameof(Vrsta));
+                }
+            }
+        }
+
+        //public MyEnum Vrsta = MyEnum.Tabelarična;
 
         public ObservableCollection<Node> Listi = new ObservableCollection<Node>();
 
@@ -315,17 +357,11 @@ namespace SistemiProjekta_WPF
         public Node(string ime, float value, float utez, int min, int max, MyEnum vrsta = MyEnum.Tabelarična)
         {
             Ime = ime;
-
             Vrednost = value;
-
             Utez = utez;
-
             Otroci = new ObservableCollection<Node>();
-
             Min = min;
-
             Max = max;
-
             Vrsta = vrsta;
         }
 
@@ -334,7 +370,12 @@ namespace SistemiProjekta_WPF
             Otroci = new ObservableCollection<Node>();
         }
 
+        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
 
+        // Izračunavanje vrednosti rekurzivno od listov navzgor - rezultat je ocena nekega parametra
         public float VrniVrednost()
         {
             if (Otroci.Count == 0)
@@ -348,9 +389,6 @@ namespace SistemiProjekta_WPF
                 }
                 else if (Vrsta == MyEnum.Logaritemska)
                 {
-                    //double a = 1.0 / (1.0 + Math.Exp(-10)); // the maximum output value
-                    //double k = 10 / Math.Log(1 / a - 1); // the steepness of the logarithmic function
-                    //double y = a / (1 + Math.Exp(-k * x)); // calculate the output value using the logarithmic function
                     return Vrednost;
                 }
                 else if (Vrsta == MyEnum.Eksponentna)
@@ -363,7 +401,6 @@ namespace SistemiProjekta_WPF
                 {
                     return Vrednost * Utez;
                 }
-
             }
             else
             {
@@ -375,6 +412,7 @@ namespace SistemiProjekta_WPF
             }
         }
 
+        //Pridobivanje vseh Listov nekega drevesa
         public void GetAllChildNodes()
         {
             if (Otroci.Count == 0)

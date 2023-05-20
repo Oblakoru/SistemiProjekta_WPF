@@ -39,5 +39,11 @@ namespace SistemiProjekta_WPF
             DialogResult = false;
             Close();
         }
+
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            double value = mySlider.Value;
+            valueText.Text = value.ToString("0.00");
+        }
     }
 }

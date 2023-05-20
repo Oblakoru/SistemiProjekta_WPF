@@ -36,23 +36,28 @@
             Grid.Row="0"
             Grid.Column="1" />
 
-        <Label
+        <!--<Label
             Grid.Row="1"
             Grid.Column="0"
             Content="Value:" />
         <TextBox
             x:Name="ValueTextBox"
             Grid.Row="1"
-            Grid.Column="1" />
+            Grid.Column="1" />-->
 
-        <Label
+        <!--<Label
             Grid.Row="2"
             Grid.Column="0"
             Content="Weight:" />
         <TextBox
             x:Name="WeightTextBox"
             Grid.Row="2"
-            Grid.Column="1" />
+            Grid.Column="1" />-->
+
+        <Slider  Grid.Row="2"
+            Grid.Column="1"  x:Name="mySlider" Minimum="0" Maximum="1" ValueChanged="Slider_ValueChanged"/>
+        <TextBlock  Grid.Row="2"
+            Grid.Column="0" x:Name="valueText" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
         <Label
             Grid.Row="3"

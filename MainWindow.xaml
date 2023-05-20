@@ -10,25 +10,28 @@
     Height="450"
     mc:Ignorable="d">
     <Grid>
-        <TabControl>
-            <TabItem Header="Hierarhija">
+        <TabControl Name="tab_root">
+            <TabItem Name="tab_hierarhija" Header="Hierarhija">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="50*" />
-                        <RowDefinition Height="50*" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="50*" />
-                        <ColumnDefinition Width="50*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <TreeView x:Name="Drevo" Grid.Column="0">
+                    <TreeView
+                        x:Name="Drevo"
+                        Grid.RowSpan="2"
+                        Grid.Column="0">
                         <TreeViewItem Header="{Binding Ime}" ItemsSource="{Binding Otroci}">
                             <TreeViewItem.ItemTemplate>
                                 <HierarchicalDataTemplate DataType="{x:Type local:Node}" ItemsSource="{Binding Otroci}">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="{Binding Ime}" />
                                         <TextBlock Text=" (" />
-                                        <TextBlock Text="{Binding Vrednost}" />
+                                        <TextBlock Text="{Binding Utez}" />
                                         <TextBlock Text=")" />
                                     </StackPanel>
                                 </HierarchicalDataTemplate>
@@ -37,15 +40,17 @@
                     </TreeView>
 
                     <StackPanel Grid.Column="1">
-                        <Button Click="AddChildButton_Click" Content="Add a new child" />
-                        <Button Click="Prikazi_List" Content="Listi" />
+                        <Button Click="AddChildButton_Click" Content="Dodaj nov parameter" />
+                        <Button Click="UrediChildButton_Click" Content="Uredi parameter" />
+                        <Button Click="Prikazi_List" Content="Nadaljuj" />
                     </StackPanel>
 
-                    <Button
+                    <!--<Button
                         Grid.Row="1"
                         Grid.Column="0"
                         Click="Izracunaj_Button_Click"
-                        Content="Izracunaj" />
+                        Content="Izracunaj" />-->
+
                     <TextBlock
                         Name="vrednost"
                         Grid.Row="1"
@@ -54,16 +59,19 @@
                     </TextBlock>
                 </Grid>
             </TabItem>
-            <TabItem Header="Alternative">
+            <TabItem
+                Name="tab_altermatove"
+                Header="Alternative"
+                IsEnabled="False">
                 <StackPanel>
                     <Button Click="PrikazPolj">
-                        Prikazi polja
+                        Dodaj alternativo
                     </Button>
                     <Button Click="IzracunajVrednost">
-                        Izracunaj
+                        Prikaži najboljo alternativo
                     </Button>
                     <TextBlock Name="vrednost_Izracunane">
-                        Tukaj se bo nahajala vrednost:
+                        Tukaj se nahajajo ovrednotene alternative
                     </TextBlock>
                     <StackPanel Name="alternative" />
                 </StackPanel>
