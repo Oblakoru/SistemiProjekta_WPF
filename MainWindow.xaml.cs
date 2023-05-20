@@ -41,10 +41,10 @@ namespace SistemiProjekta_WPF
         {
             InitializeComponent();
 
-            //rootNode.Otroci.Add(new Node("Cena", 0, 0.5f, 0, 100, MyEnum.Linearna));
-            //rootNode.Otroci.Add(new Node("Izgled", 0, 0.5f, 0, 100, MyEnum.Linearna));
-            //rootNode.Otroci[1].Otroci.Add(new Node("Grandchild0", 0, 0.5f, 0, 10, MyEnum.Linearna));
-            //rootNode.Otroci[1].Otroci.Add(new Node("Grandchild1", 0, 0.5f, 0, 10, MyEnum.Linearna));
+            rootNode.Otroci.Add(new Node("Cena", 0, 0.5f, 0, 100, MyEnum.Linearna));
+            rootNode.Otroci.Add(new Node("Izgled", 0, 0.5f, 0, 100, MyEnum.Linearna));
+            rootNode.Otroci[1].Otroci.Add(new Node("Grandchild0", 0, 0.5f, 0, 10, MyEnum.Linearna));
+            rootNode.Otroci[1].Otroci.Add(new Node("Grandchild1", 0, 0.6f, 0, 10, MyEnum.Linearna));
 
             Drevo.DataContext = rootNode;
 
@@ -118,14 +118,23 @@ namespace SistemiProjekta_WPF
 
         private void Prikazi_List(object sender, RoutedEventArgs e)
         {
-            rootNode.GetAllChildNodes();
-            rootNode.Listi = new ObservableCollection<Node>(Listi);
-            Listi.Clear();
+            try
+            {
+                rootNode.CheckSumInLevelRecursive();
 
-            tab_altermatove.IsEnabled = true;
-            tab_root.SelectedIndex = 1;
-            tab_hierarhija.IsEnabled = false;
+                rootNode.GetAllChildNodes();
+                rootNode.Listi = new ObservableCollection<Node>(Listi);
+                Listi.Clear();
 
+                tab_altermatove.IsEnabled = true;
+                tab_root.SelectedIndex = 1;
+                tab_hierarhija.IsEnabled = false;
+            }
+            catch
+            {
+                MessageBox.Show("Ojoj!");
+            }
+                
         }
 
         //Tukaj se dodajajo alternative
@@ -255,7 +264,7 @@ namespace SistemiProjekta_WPF
 
     public class Node : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         // public float Vrednost { get; set; }
         // public float Utez { get; set; }
@@ -368,6 +377,35 @@ namespace SistemiProjekta_WPF
         public Node()
         {
             Otroci = new ObservableCollection<Node>();
+        }
+
+        //ToDo
+        public void CheckSumInLevelRecursive()
+        {
+
+            if (Otroci.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var siblingNode in Otroci)
+            {
+                siblingNode.CheckSumInLevelRecursive();
+            }
+
+            float sum = 0;
+            foreach (var siblingNode in Otroci)
+            {
+                sum += siblingNode.Utez;
+            }
+
+            if (sum == 1)
+            {
+                // Sum is equal to 1
+                return ;
+            }
+
+            throw new InvalidOperationException("Sum of sibling nodes' Utez properties is not equal to 1.");
         }
 
         protected void OnPropertyChanged([CallerMemberName] string name = null)
