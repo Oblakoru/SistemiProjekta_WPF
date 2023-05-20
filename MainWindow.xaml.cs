@@ -41,12 +41,14 @@ namespace SistemiProjekta_WPF
         {
             InitializeComponent();
 
-            rootNode.Otroci.Add(new Node("Cena", 0, 0.5f, 0, 100, MyEnum.Linearna));
-            rootNode.Otroci.Add(new Node("Izgled", 0, 0.5f, 0, 100, MyEnum.Linearna));
-            rootNode.Otroci[1].Otroci.Add(new Node("Grandchild0", 0, 0.5f, 0, 10, MyEnum.Linearna));
-            rootNode.Otroci[1].Otroci.Add(new Node("Grandchild1", 0, 0.6f, 0, 10, MyEnum.Linearna));
+            //rootNode.Otroci.Add(new Node("Cena", 0, 0.5f, 0, 100, MyEnum.Linearna));
+            //rootNode.Otroci.Add(new Node("Izgled", 0, 0.5f, 0, 100, MyEnum.Linearna));
+            //rootNode.Otroci[1].Otroci.Add(new Node("Grandchild0", 0, 0.5f, 0, 10, MyEnum.Linearna));
+            //rootNode.Otroci[1].Otroci.Add(new Node("Grandchild1", 0, 0.6f, 0, 10, MyEnum.Linearna));
 
             Drevo.DataContext = rootNode;
+
+            //Drevo.SelectedItem = rootNode;
 
         }
 
@@ -401,7 +403,6 @@ namespace SistemiProjekta_WPF
 
             if (sum == 1)
             {
-                // Sum is equal to 1
                 return ;
             }
 
@@ -427,7 +428,7 @@ namespace SistemiProjekta_WPF
                 }
                 else if (Vrsta == MyEnum.Logaritemska)
                 {
-                    return Vrednost;
+                    return (float)Math.Log(Vrednost, Max) * Utez;
                 }
                 else if (Vrsta == MyEnum.Eksponentna)
                 {
@@ -466,7 +467,6 @@ namespace SistemiProjekta_WPF
             }
         }
     }
-
     public enum MyEnum
     {
         Linearna,
