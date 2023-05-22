@@ -24,7 +24,7 @@ namespace SistemiProjekta_WPF
     public partial class MainWindow : Window
     {
         //Začetni rook na katerega gradimo hierarhijo, vrednost tega bo končen izračun alternative.
-        public static Node rootNode = new Node("Ocenjevanje", 0, 1, 0, 0);
+        public static Node rootNode = new Node("Ocenjevanje", 0, 1, 0, 0, false);
 
         //Začasni ObservableCollection, ki vsebuje Liste drevesa. Njegove podatke nato prenesemo na List property objekta.
         public static ObservableCollection<Node> Listi = new ObservableCollection<Node>();
@@ -88,11 +88,26 @@ namespace SistemiProjekta_WPF
                         int min = int.Parse(dialog.MinTextBox.Text);
                         int max = int.Parse(dialog.MaxTextBox.Text);
 
-                        MyEnum vrsta = (MyEnum)dialog.Izbira_Combobox.SelectedItem;
+                        bool list;
+
+                        MyEnum vrsta;
+
+                        if(dialog.checkBox.IsChecked == true)
+                        {
+                            vrsta = (MyEnum)dialog.Izbira_Combobox.SelectedItem;
+                            list = true;
+                            
+                        }
+                        else
+                        {
+                            vrsta = MyEnum.Tabelarična;
+                            list = false;
+                        }
+                        
 
                         //Izbranemu nodu dodamo otroka
                         //selectedNode.Otroci.Add(new Node(name, value, weight, min, max, vrsta));
-                        selectedNode.Otroci.Add(new Node(name, 0, weight, min, max, vrsta));
+                        selectedNode.Otroci.Add(new Node(name, 0, weight, min, max, list, vrsta));
                     }
                 }
             }
@@ -122,17 +137,24 @@ namespace SistemiProjekta_WPF
         {
             try
             {
+                //PReverjanje če so uteži pravilna
                 rootNode.CheckSumInLevelRecursive();
 
                 rootNode.GetAllChildNodes();
                 rootNode.Listi = new ObservableCollection<Node>(Listi);
                 Listi.Clear();
 
+                foreach (Node node in rootNode.Listi)
+                {
+                    if (node.List == false)
+                        throw new Exception("Nepravilen list");
+                }
+
                 tab_altermatove.IsEnabled = true;
                 tab_root.SelectedIndex = 1;
                 tab_hierarhija.IsEnabled = false;
             }
-            catch
+            catch(Exception ex)
             {
                 MessageBox.Show("Ojoj!");
             }
@@ -245,7 +267,23 @@ namespace SistemiProjekta_WPF
                         string name = dialog.NameTextBox.Text;
                         int min = int.Parse(dialog.MinTextBox.Text);
                         int max = int.Parse(dialog.MaxTextBox.Text);
-                        MyEnum vrsta = (MyEnum)dialog.Izbira_Combobox.SelectedItem;
+                        //MyEnum vrsta = (MyEnum)dialog.Izbira_Combobox.SelectedItem;
+
+                        bool list;
+
+                        MyEnum vrsta;
+
+                        if (dialog.checkBox.IsChecked == true)
+                        {
+                            vrsta = (MyEnum)dialog.Izbira_Combobox.SelectedItem;
+                            list = true;
+
+                        }
+                        else
+                        {
+                            vrsta = MyEnum.Tabelarična;
+                            list = false;
+                        }
 
                         //Izbranemu nodu dodamo otroka
                         //selectedNode.Otroci.Add(new Node(name, value, weight, min, max, vrsta));
@@ -254,6 +292,7 @@ namespace SistemiProjekta_WPF
                         selectedNode.Max = max;
                         selectedNode.Ime = name;
                         selectedNode.Vrsta = vrsta;
+                        selectedNode.List = list;
                     }
                 }
             }
@@ -285,6 +324,20 @@ namespace SistemiProjekta_WPF
                 {
                     vrednost = value;
                     OnPropertyChanged(nameof(Vrednost));
+                }
+            }
+        }
+
+        private bool list;
+        public bool List
+        {
+            get { return list; }
+            set
+            {
+                if (list != value)
+                {
+                    list = value;
+                    OnPropertyChanged(nameof(List));
                 }
             }
         }
@@ -365,7 +418,7 @@ namespace SistemiProjekta_WPF
 
         public ObservableCollection<Node> Otroci { get; set; }
 
-        public Node(string ime, float value, float utez, int min, int max, MyEnum vrsta = MyEnum.Tabelarična)
+        public Node(string ime, float value, float utez, int min, int max, bool list, MyEnum vrsta = MyEnum.Tabelarična)
         {
             Ime = ime;
             Vrednost = value;
@@ -374,6 +427,7 @@ namespace SistemiProjekta_WPF
             Min = min;
             Max = max;
             Vrsta = vrsta;
+            List = list;
         }
 
         public Node()

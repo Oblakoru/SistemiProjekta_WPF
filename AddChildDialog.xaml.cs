@@ -45,5 +45,28 @@ namespace SistemiProjekta_WPF
             double value = mySlider.Value;
             valueText.Text = value.ToString("0.00");
         }
+        private void CheckBoxChanged(object sender, RoutedEventArgs e)
+        {
+            if ((bool)(checkBox.IsChecked) == false) 
+            {
+                Izbira_Combobox.Visibility = Visibility.Collapsed;
+                Izbira_Label.Visibility = Visibility.Collapsed;
+                MinLabel.Visibility = Visibility.Collapsed;
+                MaxLabel.Visibility = Visibility.Collapsed;
+                MinTextBox.Visibility = Visibility.Collapsed;
+                MaxTextBox.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                Izbira_Combobox.Visibility = Visibility.Visible;
+                Izbira_Label.Visibility = Visibility.Visible;
+                MinLabel.Visibility = Visibility.Visible;
+                MaxLabel.Visibility = Visibility.Visible;
+                MinTextBox.Visibility= Visibility.Visible;
+                MaxTextBox.Visibility= Visibility.Visible;
+            }
+        }
+
+
     }
 }

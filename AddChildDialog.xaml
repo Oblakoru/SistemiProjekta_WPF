@@ -54,12 +54,22 @@
             Grid.Row="2"
             Grid.Column="1" />-->
 
-        <Slider  Grid.Row="2"
-            Grid.Column="1"  x:Name="mySlider" Minimum="0" Maximum="1" ValueChanged="Slider_ValueChanged"/>
-        <TextBlock  Grid.Row="2"
-            Grid.Column="0" x:Name="valueText" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <Slider
+            x:Name="mySlider"
+            Grid.Row="2"
+            Grid.Column="1"
+            Maximum="1"
+            Minimum="0"
+            ValueChanged="Slider_ValueChanged" />
+        <TextBlock
+            x:Name="valueText"
+            Grid.Row="2"
+            Grid.Column="0"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center" />
 
         <Label
+            x:Name="MinLabel"
             Grid.Row="3"
             Grid.Column="0"
             Content="Min:" />
@@ -69,6 +79,7 @@
             Grid.Column="1" />
 
         <Label
+            x:Name="MaxLabel"
             Grid.Row="4"
             Grid.Column="0"
             Content="Max:" />
@@ -80,23 +91,39 @@
         <Label
             Grid.Row="5"
             Grid.Column="0"
-            Content="Vrsta:" />
-        <ComboBox
-            x:Name="Izbira_Combobox"
+            Content="Ali je parameter list?:" />
+
+        <CheckBox
+            x:Name="checkBox"
             Grid.Row="5"
             Grid.Column="1"
-            SelectedIndex="0" />
+            Checked="CheckBoxChanged"
+            Content="Da"
+            Unchecked="CheckBoxChanged" />
+
+        <Label
+            x:Name="Izbira_Label"
+            Grid.Row="6"
+            Grid.Column="0"
+            Content="Vrsta:"
+            Visibility="Collapsed" />
+        <ComboBox
+            x:Name="Izbira_Combobox"
+            Grid.Row="6"
+            Grid.Column="1"
+            SelectedIndex="0"
+            Visibility="Collapsed" />
 
         <Button
             x:Name="OkButton"
-            Grid.Row="6"
+            Grid.Row="7"
             Grid.Column="1"
             Margin="0,20,0,0"
             Click="OkButton_Click"
             Content="OK" />
         <Button
             x:Name="CancelButton"
-            Grid.Row="7"
+            Grid.Row="8"
             Grid.Column="1"
             Margin="0,20,0,0"
             Click="CancelButton_Click"
