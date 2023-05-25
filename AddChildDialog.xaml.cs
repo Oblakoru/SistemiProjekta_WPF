@@ -26,6 +26,9 @@ namespace SistemiProjekta_WPF
             Izbira_Combobox.Items.Add(MyEnum.Logaritemska);
             Izbira_Combobox.Items.Add(MyEnum.Tabelarična);
             Izbira_Combobox.Items.Add(MyEnum.Eksponentna);
+            Izbira_Combobox.Items.Add(MyEnum.Linearna_Padajoca);
+            Izbira_Combobox.Items.Add(MyEnum.Exponentna_Padajoca);
+            Izbira_Combobox.Items.Add(MyEnum.Logaritemska_Padajoca);
         }
 
         private void OkButton_Click(object sender, RoutedEventArgs e)

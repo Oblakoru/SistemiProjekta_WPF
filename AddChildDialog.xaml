@@ -72,21 +72,25 @@
             x:Name="MinLabel"
             Grid.Row="3"
             Grid.Column="0"
-            Content="Min:" />
+            Content="Min:"
+            Visibility="Collapsed" />
         <TextBox
             x:Name="MinTextBox"
             Grid.Row="3"
-            Grid.Column="1" />
+            Grid.Column="1"
+            Visibility="Collapsed" />
 
         <Label
             x:Name="MaxLabel"
             Grid.Row="4"
             Grid.Column="0"
-            Content="Max:" />
+            Content="Max:"
+            Visibility="Collapsed" />
         <TextBox
             x:Name="MaxTextBox"
             Grid.Row="4"
-            Grid.Column="1" />
+            Grid.Column="1"
+            Visibility="Collapsed" />
 
         <Label
             Grid.Row="5"

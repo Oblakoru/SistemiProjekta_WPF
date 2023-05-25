@@ -1,7 +1,10 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -58,18 +61,8 @@ namespace SistemiProjekta_WPF
         {
             Node selectedNode = Drevo.SelectedItem as Node;
 
-            try
-            {
-                if (selectedNode == null)
-                {
-                    var x = Drevo.SelectedItem as TreeViewItem;
-                    selectedNode = x.DataContext as Node;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Ojoj!");
-            }
+           var x = Drevo.SelectedItem as TreeViewItem;
+           selectedNode = x.DataContext as Node;
 
             try
             {
@@ -94,7 +87,14 @@ namespace SistemiProjekta_WPF
 
                         if(dialog.checkBox.IsChecked == true)
                         {
+                            
                             vrsta = (MyEnum)dialog.Izbira_Combobox.SelectedItem;
+                            if (vrsta == MyEnum.Tabelarična)
+                            {
+                                MessageBox.Show("Ker je bila izbrana tabelarična funkcija, je domena med 0 in 1");
+                                min = 0;
+                                max = 1;
+                            }
                             list = true;
                             
                         }
@@ -119,10 +119,10 @@ namespace SistemiProjekta_WPF
         }
 
         //Trenutno se to nebo uporabljalo
-        private void Izracunaj_Button_Click(object sender, RoutedEventArgs e)
-        {
-            vrednost.Text = rootNode.VrniVrednost().ToString();
-        }
+       //private void Izracunaj_Button_Click(object sender, RoutedEventArgs e)
+       //{
+       //    vrednost.Text = rootNode.VrniVrednost().ToString();
+       //}
 
         //Vsakemu nodu naredimo novi ObservableCollection, v katerem se nahajajo reference to njegovih listov z namenom spreminjanja vrednosti
         private void DodeliListe(Node node)
@@ -276,6 +276,12 @@ namespace SistemiProjekta_WPF
                         if (dialog.checkBox.IsChecked == true)
                         {
                             vrsta = (MyEnum)dialog.Izbira_Combobox.SelectedItem;
+                            if (vrsta == MyEnum.Tabelarična)
+                            {
+                                MessageBox.Show("Ker je bila izbrana tabelarična funkcija, je domena med 0 in 1");
+                                min = 0;
+                                max = 1;
+                            }
                             list = true;
 
                         }
@@ -300,6 +306,92 @@ namespace SistemiProjekta_WPF
             {
                 MessageBox.Show("Ojoj!");
             }
+        }
+
+        private void Uvoz_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Filter = "JSON Files (*.json)|*.json",
+                DefaultExt = ".json"
+            };
+
+            // Show the OpenFileDialog
+            bool? result = openFileDialog.ShowDialog();
+
+            // Check if a file was selected
+            if (result == true)
+            {
+                try
+                {
+                    // Read JSON data from the file
+                    string json = File.ReadAllText(openFileDialog.FileName);
+
+                    // Convert JSON string to object
+                    
+                    //Drevo.Items.Clear();
+                    var objekt = JsonConvert.DeserializeObject<Node>(json);
+                    rootNode = objekt;
+
+
+                    // Drevo.Items.Refresh();
+                    //
+                    // Drevo.DataContext = rootNode;
+
+                    //OnPropertyChanged();
+
+                    MessageBox.Show("JSON file opened successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error occurred while opening JSON file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("No file selected.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private void Izvoz_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                Filter = "JSON Files (*.json)|*.json",
+                DefaultExt = ".json"
+            };
+
+            // Show the SaveFileDialog
+            bool? result = saveFileDialog.ShowDialog();
+
+            // Check if a file was selected
+            if (result == true)
+            {
+                try
+                {
+                    // Convert object to JSON string
+                    string json = JsonConvert.SerializeObject(rootNode, Formatting.Indented);
+
+                    // Save JSON data to the file
+                    File.WriteAllText(saveFileDialog.FileName, json);
+
+                    MessageBox.Show("JSON file saved successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error occurred while saving JSON file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("No file selected.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private void PrikaziGraf(object sender, RoutedEventArgs e)
+        {
+            GrafOkno graf = new GrafOkno(IzracunaneAlternative);
+            graf.Show();
         }
     }
 
@@ -490,6 +582,21 @@ namespace SistemiProjekta_WPF
                     float x = (float)(k * (Math.Pow(Vrednost, 2)));
                     return x * Utez;
                 }
+                else if (Vrsta == MyEnum.Exponentna_Padajoca)
+                {
+                    double k = 1 / Math.Pow(Max, 2);
+                    float x = (float)(k * (Math.Pow(Vrednost, 2)));
+                    var vrednost = 1 - x;
+                    return vrednost * Utez;
+                }
+                else if (Vrsta == MyEnum.Linearna_Padajoca)
+                {
+                    float m = (float)(1.0 / (Max - Min));
+                    float b = -m * Min;
+                    float y = m * Vrednost + b;
+                    var rezultat = 1 - y;
+                    return rezultat * Utez;
+                }
                 else
                 {
                     return Vrednost * Utez;
@@ -526,7 +633,10 @@ namespace SistemiProjekta_WPF
         Linearna,
         Logaritemska,
         Tabelarična,
-        Eksponentna
+        Eksponentna,
+        Linearna_Padajoca,
+        Exponentna_Padajoca,
+        Logaritemska_Padajoca
     }
 
     public class Alternativa

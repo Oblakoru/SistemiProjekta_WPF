@@ -66,7 +66,7 @@ namespace SistemiProjekta_WPF
                     {
                         TextBox textBox = notranjiStack.Children[y] as TextBox;
 
-                        if ((glavniNode.Listi[steviloListov].Min <= Convert.ToInt32(textBox.Text)) && Convert.ToInt32(textBox.Text) <= glavniNode.Listi[steviloListov].Max)
+                        if ((glavniNode.Listi[steviloListov].Min <= Convert.ToDouble(textBox.Text)) && Convert.ToDouble(textBox.Text) <= glavniNode.Listi[steviloListov].Max)
                         {
                             glavniNode.Listi[steviloListov].Vrednost = float.Parse(textBox.Text);
                             steviloListov++;
