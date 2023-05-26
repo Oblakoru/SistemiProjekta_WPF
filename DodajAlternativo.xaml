@@ -9,9 +9,12 @@
     Width="800"
     Height="450"
     mc:Ignorable="d">
-    <StackPanel Name="rootStack">
-        <Label Content="Ime parametra:" />
-        <TextBox x:Name="NameTextBox" HorizontalContentAlignment="Center" />
+    <StackPanel Name="rootStack" Margin="20">
+        <Label HorizontalAlignment="Center" Content="Ime alternative:" />
+        <TextBox
+            x:Name="NameTextBox"
+            Width="200"
+            HorizontalContentAlignment="Center" />
 
         <StackPanel Name="notranjiStack" />
 
@@ -21,14 +24,14 @@
             Click="OkButton_Click"
             Content="OK" />-->
         <Button
+            x:Name="IzracunButton"
+            Margin="0,20,0,0"
+            Click="IzracunButton_Click"
+            Content="Izračunaj" />
+        <Button
             x:Name="CancelButton"
             Margin="0,20,0,0"
             Click="CancelButton_Click"
             Content="Prekliči" />
-        <Button
-            x:Name="IzracunButton"
-            Margin="0,20,0,0"
-            Click="IzracunButton_Click"
-            Content="Izracunaj" />
     </StackPanel>
 </Window>

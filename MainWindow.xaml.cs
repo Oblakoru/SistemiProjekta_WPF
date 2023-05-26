@@ -29,16 +29,15 @@ namespace SistemiProjekta_WPF
         //Začetni rook na katerega gradimo hierarhijo, vrednost tega bo končen izračun alternative.
         public static Node rootNode = new Node("Ocenjevanje", 0, 1, 0, 0, false);
 
+
+        //Nova stvar!
+        public static ObservableCollection<Node> rootNodeList = new ObservableCollection<Node>();
+
         //Začasni ObservableCollection, ki vsebuje Liste drevesa. Njegove podatke nato prenesemo na List property objekta.
         public static ObservableCollection<Node> Listi = new ObservableCollection<Node>();
 
-        //Kopije drevesa z namenom izračun alternativ. 1 kopija == 1 alternativa
-       // public static ObservableCollection<Node> kopije = new ObservableCollection<Node>();
-        //public static int steviloAlternativ = 0;
-
         //Imena ter končne ocene posameznih alternativ
         public static ObservableCollection<Alternativa> IzracunaneAlternative = new ObservableCollection<Alternativa>();
-
 
         public MainWindow()
         {
@@ -49,20 +48,63 @@ namespace SistemiProjekta_WPF
             //rootNode.Otroci[1].Otroci.Add(new Node("Grandchild0", 0, 0.5f, 0, 10, MyEnum.Linearna));
             //rootNode.Otroci[1].Otroci.Add(new Node("Grandchild1", 0, 0.6f, 0, 10, MyEnum.Linearna));
 
-            Drevo.DataContext = rootNode;
 
-            //Drevo.SelectedItem = rootNode;
+            rootNodeList.Add(rootNode);
+
+            //Old
+            //Drevo.DataContext = rootNode;
+
+            //new
+            Drevo.DataContext = rootNodeList;
 
         }
 
         //Dodajanja otroka v hierarhijo preko novega okna.
-       
         private void AddChildButton_Click(object sender, RoutedEventArgs e)
         {
-            Node selectedNode = Drevo.SelectedItem as Node;
 
-           var x = Drevo.SelectedItem as TreeViewItem;
-           selectedNode = x.DataContext as Node;
+            Node selectedNode = Drevo.SelectedItem as Node;
+            try
+            {
+                if (selectedNode == null)
+                {
+                    throw new Exception();
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Izbrati je potrebno NODE!");
+            }
+           
+            
+           //var x = Drevo.SelectedItem as TreeViewItem;
+
+           // try
+           // {
+           //     selectedNode = x.DataContext as Node;
+           //     if (selectedNode == null)
+           //     {
+           //         throw new InvalidOperationException("Izberi Node!");
+           //     }
+           // }
+           // catch
+           // {
+           //     MessageBox.Show("Izberi Node!");
+           // }
+            
+
+            //try
+            //{
+            //    if( selectedNode == null)
+            //    {
+            //        throw new Exception();
+            //    }
+            //    selectedNode = x.DataContext as Node;
+            //}
+            //catch
+            //{
+            //    MessageBox.Show("Izbrati je potrebno node!");
+            //}
 
             try
             {
@@ -117,12 +159,6 @@ namespace SistemiProjekta_WPF
             }
 
         }
-
-        //Trenutno se to nebo uporabljalo
-       //private void Izracunaj_Button_Click(object sender, RoutedEventArgs e)
-       //{
-       //    vrednost.Text = rootNode.VrniVrednost().ToString();
-       //}
 
         //Vsakemu nodu naredimo novi ObservableCollection, v katerem se nahajajo reference to njegovih listov z namenom spreminjanja vrednosti
         private void DodeliListe(Node node)
@@ -238,15 +274,20 @@ namespace SistemiProjekta_WPF
 
             try
             {
+                //if (selectedNode == null)
+                //{
+                //    var x = Drevo.SelectedItem as TreeViewItem;
+                //    selectedNode = x.DataContext as Node;
+                //}
+
                 if (selectedNode == null)
                 {
-                    var x = Drevo.SelectedItem as TreeViewItem;
-                    selectedNode = x.DataContext as Node;
+                    throw new Exception();
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ojoj!");
+                MessageBox.Show("Izbrati je poterbno NODE!");
             }
 
             try
@@ -333,6 +374,11 @@ namespace SistemiProjekta_WPF
                     var objekt = JsonConvert.DeserializeObject<Node>(json);
                     rootNode = objekt;
 
+                    rootNodeList.Clear();
+                    rootNodeList.Add(rootNode);
+                    Drevo.DataContext = rootNodeList;
+                    //Drevo.DataContext = rootNodeList;
+
 
                     // Drevo.Items.Refresh();
                     //
@@ -398,13 +444,6 @@ namespace SistemiProjekta_WPF
     public class Node : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
-
-        // public float Vrednost { get; set; }
-        // public float Utez { get; set; }
-        // public string Ime { get; set; }
-        // public int Min { get; set; }
-        //
-        // public int Max { get; set; }
 
         private float vrednost;
         public float Vrednost
@@ -628,6 +667,7 @@ namespace SistemiProjekta_WPF
             }
         }
     }
+
     public enum MyEnum
     {
         Linearna,

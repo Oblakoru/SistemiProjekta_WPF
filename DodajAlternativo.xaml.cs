@@ -29,7 +29,7 @@ namespace SistemiProjekta_WPF
             foreach (Node node in glavniNode.Listi)
             {
                 Label label = new Label();
-                label.Content = node.Ime;
+                label.Content = node.Ime + " ( " + node.Min + "," + node.Max + " ) ";
                 label.Width = 100;
 
                 TextBox textBox = new TextBox();

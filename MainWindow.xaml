@@ -18,10 +18,13 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="104*" />
+                        <ColumnDefinition Width="293*" />
+                        <ColumnDefinition Width="397*" />
                     </Grid.ColumnDefinitions>
-                    <TreeView
+
+
+                    <!--<TreeView
                         x:Name="Drevo"
                         Grid.RowSpan="2"
                         Grid.Column="0">
@@ -37,9 +40,27 @@
                                 </HierarchicalDataTemplate>
                             </TreeViewItem.ItemTemplate>
                         </TreeViewItem>
+                    </TreeView>-->
+
+                    <TreeView
+                        x:Name="Drevo"
+                        Grid.RowSpan="2"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        ItemsSource="{Binding}">
+                        <TreeView.ItemTemplate>
+                            <HierarchicalDataTemplate DataType="{x:Type local:Node}" ItemsSource="{Binding Otroci}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Ime}" />
+                                    <TextBlock Text=" (" />
+                                    <TextBlock Text="{Binding Utez}" />
+                                    <TextBlock Text=")" />
+                                </StackPanel>
+                            </HierarchicalDataTemplate>
+                        </TreeView.ItemTemplate>
                     </TreeView>
 
-                    <StackPanel Grid.RowSpan="2" Grid.Column="1">
+                    <StackPanel Grid.RowSpan="2" Grid.Column="2">
                         <Button Click="AddChildButton_Click" Content="Dodaj nov parameter" />
                         <Button Click="UrediChildButton_Click" Content="Uredi parameter" />
                         <Button Click="Prikazi_List" Content="Nadaljuj" />
@@ -63,8 +84,11 @@
                     <Button Click="PrikaziGraf">
                         Prikaži graf
                     </Button>
-                    <TextBlock Name="vrednost_Izracunane">
-                        Tukaj se nahajajo ovrednotene alternative
+                    <TextBlock
+                        Name="vrednost_Izracunane"
+                        Padding="10"
+                        HorizontalAlignment="Center">
+                        Tukaj se nahajajo ovrednotene alternative: 
                     </TextBlock>
                     <StackPanel Name="alternative" />
                 </StackPanel>
